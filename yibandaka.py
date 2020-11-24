@@ -8,10 +8,35 @@ import requests
 
 
 def daka(Tim,TempList):
-    with open("cookies_list.txt", "r", encoding="utf-8")as fl:
+    with open("/home/yiban/cookies_list.txt", "r", encoding="utf-8")as fl:
+        kk = 0
+        option =selenium.webdriver.ChromeOptions()
+        option.add_argument('--no-sandbox')
+        option.add_argument('--headless')
+        # 注意path，我这里是chromedriver放在/home/apk/chromedriver
+        driver = selenium.webdriver.Chrome(executable_path='/home/software/chromedriver', chrome_options=option)
+        driver.get("http://www.yiban.cn/")
+        driver.implicitly_wait(8)
+        time.sleep(2)
+        # driver = selenium.webdriver.Chrome()
+        # driver.get("http://www.yiban.cn/")
+        # driver.implicitly_wait(5)
+        # time.sleep(2)
         for line in fl.readlines():
+            kk = kk + 1
+            if(kk % 5 == 0):
+                print("更换浏览器")
+                driver.quit()
+                time.sleep(8)
+                option =selenium.webdriver.ChromeOptions()
+                option.add_argument('--no-sandbox')
+                option.add_argument('--headless')
+                driver = selenium.webdriver.Chrome(executable_path='/home/software/chromedriver', chrome_options=option)
+                driver.get("http://www.yiban.cn/")
+                driver.implicitly_wait(8)
+                time.sleep(2)
             cookies = json.loads(line)
-            print("读取cookies！")
+            print("%d读取cookies！" %kk )
             driver.delete_all_cookies()
             driver.get("http://www.yiban.cn/")
             for co in cookies:
@@ -50,29 +75,23 @@ def daka(Tim,TempList):
                     driver.find_element_by_xpath("/html/body/div[1]/div/div[5]/div/div[2]/div[3]/input").click()
                     driver.find_element_by_xpath("/html/body/div[1]/div/div[5]/div/div[2]/div[4]/span").click()
             except:
-                print("打卡失败！")
+                print("%d打卡失败！" % kk)
             else:
-                print("打卡成功！")
+                print("%d打卡成功！" % kk)
+    driver.quit()
 
             
 
 if __name__ == "__main__":
-    option =selenium.webdriver.ChromeOptions()
-    option.add_argument('--no-sandbox')
-    option.add_argument('--headless')
-    # 注意path，我这里是chromedriver放在/home/apk/chromedriver
-    driver = selenium.webdriver.Chrome(executable_path='/home/software/chromedriver', chrome_options=option)
-    #driver = selenium.webdriver.Chrome()
-    driver.get("http://www.yiban.cn/")
-    driver.implicitly_wait(10)
+    ss = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(time.time()))
+    print(ss)
     ss = time.strftime("%H", time.localtime(time.time()))
-    if(ss == "07"):
+    if(ss == "10"):
         daka(1,["36.6","36.7","36.8"])
     elif(ss == "11"):
         daka(2,["36.6","36.8","36.9"])
     elif(ss == "18"):
         daka(3,["36.7","36.8","36.9"])
 
-    driver.quit()
                 
             
